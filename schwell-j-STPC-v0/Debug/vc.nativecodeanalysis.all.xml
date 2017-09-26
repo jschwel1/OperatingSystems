@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?><DEFECTS><DEFECT>
+    <SFA>
+      <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+      <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+      <LINE>69</LINE>
+      <COLUMN>7</COLUMN>
+    </SFA>
+    <DEFECTCODE>6387</DEFECTCODE>
+    <DESCRIPTION>'destFile' could be '0':  this does not adhere to the specification for the function 'fclose'. </DESCRIPTION>
+    <FUNCTION>copyFile</FUNCTION>
+    <DECORATED>?copyFile@@YAXPAD0E@Z</DECORATED>
+    <FUNCLINE>50</FUNCLINE>
+    <PROBABILITY>1</PROBABILITY>
+    <RANK>4</RANK>
+    <CATEGORY>
+      <RULECATEGORY>mspft</RULECATEGORY>
+    </CATEGORY>
+    <PATH>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>53</LINE>
+        <COLUMN>6</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>54</LINE>
+        <COLUMN>6</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>56</LINE>
+        <COLUMN>13</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>61</LINE>
+        <COLUMN>14</COLUMN>
+        <KEYEVENT>
+          <ID>1</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>'destFile' may be NULL (Enter this branch)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>63</LINE>
+        <COLUMN>8</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>66</LINE>
+        <COLUMN>7</COLUMN>
+        <KEYEVENT>
+          <ID>2</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume 'mode==0' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>67</LINE>
+        <COLUMN>20</COLUMN>
+        <KEYEVENT>
+          <ID>3</ID>
+          <KIND>declaration</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>'destFile' is an In/Out argument to 'copyLineByLine' (declared on line 15)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>69</LINE>
+        <COLUMN>7</COLUMN>
+        <KEYEVENT>
+          <ID>4</ID>
+          <KIND>usage</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>'destFile' is an Input to 'fclose' (declared at c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h:144)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\jacob\google drive\binghamton\senior fall\os\projects\proj1.back\</FILEPATH>
+        <FILENAME>schwell-j-stpc-v0.cpp</FILENAME>
+        <LINE>69</LINE>
+        <COLUMN>7</COLUMN>
+        <KEYEVENT>
+          <ID>5</ID>
+          <KIND>usage</KIND>
+          <IMPORTANCE>Essential</IMPORTANCE>
+          <MESSAGE>'destFile' should not be NULL, because this is not consistent with the SAL annotation on 'fclose'</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+    </PATH>
+  </DEFECT></DEFECTS>
