@@ -1,5 +1,5 @@
 /**
-* Note pthreads headers are in C:\Temp/pthreads
+* Note pthreads headers are in C:\Temp\pthreads
 */
 #include <iostream>
 #include <string.h>
@@ -12,6 +12,7 @@
 #else
 #include <pthread.h>
 #include <semaphore.h>
+#include "time_functions.h"
 #endif
 
 #define BUFFER_SIZE 1024
@@ -73,6 +74,7 @@ int main(int argc, char **argv)
 	printf("successfuly opened files\n");
 	
 	// start threads
+	start_timing();
 	if (pthread_create(&producerThread, NULL, readFrom, (void*)fileFrom))
 	{
 		printf("Error creating producer thread.\n");
@@ -99,10 +101,12 @@ int main(int argc, char **argv)
 		printf("Error joining consumer.\n");
 		return 1;
 	}
-
+	stop_timing();
 	fclose(fileFrom);
 	fclose(fileTo);
 
+	printf("Wall time: %fs\n", get_wall_clock_diff());
+	printf("CPU time:  %fs\n", get_CPU_time_diff());
 	return 0;
 }
 
