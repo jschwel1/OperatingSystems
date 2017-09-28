@@ -129,15 +129,16 @@ void* writeTo(void* toFile)
 {
 	FILE* file = (FILE*)toFile;
 	int idx = 0;
-
-	while(!doneReadingFile) 
+	int fullSemVal;
+	while((!doneReadingFile) || (fullSemVal > 0)) 
 	{
+		
 		sem_wait(&fullSem);
 		sem_wait(&inUseSem);
 		fputc(buffer[idx], file);
 		sem_post(&inUseSem);
 		sem_post(&emptySem);
-
+		sem_getvalue(&fullSem, &fullSemVal);
 		idx = (idx+1)%BUFFER_SIZE;
 	}
 	return NULL;
