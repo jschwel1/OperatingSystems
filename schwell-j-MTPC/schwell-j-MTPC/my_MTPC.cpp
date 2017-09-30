@@ -1,27 +1,27 @@
 /**
-* Note pthreads headers are in C:\Temp\pthreads
+* Note pthread headers are in C:\Temp\pthreads for windows
 */
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+
 #ifdef WIN32
 #include <time_functions.h>
-#include <pthread.h>
-#include <semaphore.h>
 #else
-#include <pthread.h>
-#include <semaphore.h>
 #include "time_functions.h"
 #endif
 
+#define NUM_BUFFERS 10
 #define BUFFER_SIZE 1024
 
 void* readFrom(void* fromFile);
 void* writeTo(void* toFile);
 
 // Global Variables
-char buffer[BUFFER_SIZE];
+char buffer[NUM_BUFFERS][BUFFER_SIZE];
 sem_t inUseSem;
 sem_t emptySem;
 sem_t fullSem;
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	FILE* fileFrom;
 	FILE* fileTo;
 	sem_init(&inUseSem, 0, 1);
-	sem_init(&emptySem, 0, BUFFER_SIZE);
+	sem_init(&emptySem, 0, NUM_BUFFERS);
 	sem_init(&fullSem, 0, 0);
 	pthread_t producerThread;
 	pthread_t consumerThread;
@@ -114,16 +114,23 @@ void* readFrom(void* fromFile)
 {
 	FILE* file = (FILE*)fromFile;
 	int idx = 0;
-	int ch;
-	while ((ch = fgetc(file)) != EOF)
+	char stillReadingFile = 1;
+	while (stillReadingFile)
 	{
 		sem_wait(&emptySem);
 		sem_wait(&inUseSem);
-		buffer[idx] = ch;
+		
+		if ((fgets(buffer[idx], BUFFER_SIZE, file)) == NULL)
+		{
+			stillReadingFile = 0;
+			sem_post(&inUseSem);
+			sem_post(&emptySem);
+			break;
+		}
+//		printf("Line: %s | stillReading: %d\n", buffer[idx], stillReadingFile);
 		sem_post(&inUseSem);
 		sem_post(&fullSem);
-
-		idx = (idx+1)%BUFFER_SIZE;
+		idx = (idx+1)%NUM_BUFFERS;
 	}
 	doneReadingFile = true;
 	return NULL;
@@ -136,14 +143,13 @@ void* writeTo(void* toFile)
 	int fullSemVal;
 	while((!doneReadingFile) || (fullSemVal > 0)) 
 	{
-		
 		sem_wait(&fullSem);
 		sem_wait(&inUseSem);
-		fputc(buffer[idx], file);
+		fputs(buffer[idx], file);
 		sem_post(&inUseSem);
 		sem_post(&emptySem);
 		sem_getvalue(&fullSem, &fullSemVal);
-		idx = (idx+1)%BUFFER_SIZE;
+		idx = (idx+1)%NUM_BUFFERS;
 	}
 	return NULL;
 }
