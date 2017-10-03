@@ -51,12 +51,25 @@ int main(int argc, char **argv)
 		strncat(fileToPath, "/temp/courseout/", sizeof(fileToPath));
 	#endif
 	printf("created paths\n");	
-	if (argc != 3) {
+	if (argc != 3) 
+	{
+		char fileIn[256];
+		char fileOut[256];
+
 		printf("Call with %s <file_from> <file_to>\n", argv[0]);
-		return 1;
+		printf("Enter source file name: %s", fileFromPath);
+		std::cin >> fileIn;
+		printf("Enter destination file name: %s", fileToPath);
+		std::cin >> fileOut;
+		strncat(fileFromPath, fileIn , sizeof(fileFromPath));
+		strncat(fileToPath, fileOut, sizeof(fileToPath));
+
 	}
-	strncat(fileFromPath, argv[1], sizeof(fileFromPath));
-	strncat(fileToPath, argv[2], sizeof(fileToPath));
+	else 
+	{
+		strncat(fileFromPath, argv[1], sizeof(fileFromPath));
+		strncat(fileToPath, argv[2], sizeof(fileToPath));
+	}
 
 	// open the files
 	fileFrom = fopen(fileFromPath, "r");
@@ -114,25 +127,22 @@ void* readFrom(void* fromFile)
 {
 	FILE* file = (FILE*)fromFile;
 	int idx = 0;
-	char stillReadingFile = 1;
-	while (stillReadingFile)
+	while (!doneReadingFile)
 	{
 		sem_wait(&emptySem);
 		sem_wait(&inUseSem);
 		
 		if ((fgets(buffer[idx], BUFFER_SIZE, file)) == NULL)
 		{
-			stillReadingFile = 0;
+			doneReadingFile = true;
 			sem_post(&inUseSem);
 			sem_post(&emptySem);
 			break;
 		}
-//		printf("Line: %s | stillReading: %d\n", buffer[idx], stillReadingFile);
 		sem_post(&inUseSem);
 		sem_post(&fullSem);
 		idx = (idx+1)%NUM_BUFFERS;
 	}
-	doneReadingFile = true;
 	return NULL;
 }
 
