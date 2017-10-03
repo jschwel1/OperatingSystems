@@ -14,6 +14,11 @@
 #include "time_functions.h"
 #endif
 
+#define WIN_IN "C:\\temp\\coursein\\"
+#define WIN_OUT "C:\\temp\\courseout\\"
+#define LINUX_IN "/temp/coursein/"
+#define LINUX_OUT "/temp/courseout/"
+
 #define NUM_BUFFERS 10
 #define BUFFER_SIZE 1024
 
@@ -42,13 +47,13 @@ int main(int argc, char **argv)
 
 	printf("Created variable, starting stuff.\n");
 	#ifdef WIN32
-		strncpy(fileFromPath, "C:\\temp\\coursein\\", sizeof(fileFromPath));
-		strncpy(fileToPath, "C:\\temp\\courseout\\", sizeof(fileToPath));
+		strncpy(fileFromPath, WIN_IN, sizeof(fileFromPath));
+		strncpy(fileToPath, WIN_OUT, sizeof(fileToPath));
 	#else
 		strncpy(fileFromPath, getenv("HOME"), sizeof(fileFromPath));
 		strncpy(fileToPath, getenv("HOME"), sizeof(fileToPath));
-		strncat(fileFromPath, "/temp/coursein/", sizeof(fileFromPath));
-		strncat(fileToPath, "/temp/courseout/", sizeof(fileToPath));
+		strncat(fileFromPath, LINUX_IN,  sizeof(fileFromPath));
+		strncat(fileToPath, LINUX_OUT, sizeof(fileToPath));
 	#endif
 	printf("created paths\n");	
 	if (argc != 3) 
@@ -137,7 +142,7 @@ void* readFrom(void* fromFile)
 			doneReadingFile = true;
 			sem_post(&inUseSem);
 			sem_post(&emptySem);
-			break;
+			return NULL;
 		}
 		sem_post(&inUseSem);
 		sem_post(&fullSem);
