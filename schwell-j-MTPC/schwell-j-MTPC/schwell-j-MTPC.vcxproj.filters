@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="my_MTPC.cpp">
+    <ClCompile Include="schwell-j-MTPC-v0.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

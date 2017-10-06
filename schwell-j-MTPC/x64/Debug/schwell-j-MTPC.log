@@ -1,0 +1,6 @@
+﻿  my_MTPC.cpp
+c:\users\jacob\google drive\binghamton\senior fall\os\projects\operatingsystems\schwell-j-mtpc\schwell-j-mtpc\my_mtpc.cpp(53): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+c:\users\jacob\google drive\binghamton\senior fall\os\projects\operatingsystems\schwell-j-mtpc\schwell-j-mtpc\my_mtpc.cpp(54): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+  schwell-j-MTPC.vcxproj -> C:\Users\Jacob\Google Drive\Binghamton\Senior Fall\OS\Projects\OperatingSystems\schwell-j-MTPC\x64\Debug\schwell-j-MTPC.exe

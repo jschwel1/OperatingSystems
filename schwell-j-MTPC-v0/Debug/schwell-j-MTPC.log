@@ -1,0 +1,13 @@
+﻿  schwell-j-MTPC-v0.cpp
+c:\users\jacob\google drive\binghamton\senior fall\os\projects\schwell-j-mtpc-v0\schwell-j-mtpc-v0.cpp(53): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+c:\users\jacob\google drive\binghamton\senior fall\os\projects\schwell-j-mtpc-v0\schwell-j-mtpc-v0.cpp(54): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+schwell-j-MTPC-v0.obj : error LNK2019: unresolved external symbol __imp__pthread_create referenced in function _main
+schwell-j-MTPC-v0.obj : error LNK2019: unresolved external symbol __imp__pthread_join referenced in function _main
+schwell-j-MTPC-v0.obj : error LNK2019: unresolved external symbol __imp__sem_init referenced in function _main
+schwell-j-MTPC-v0.obj : error LNK2019: unresolved external symbol __imp__sem_wait referenced in function "void * __cdecl readFrom(void *)" (?readFrom@@YAPAXPAX@Z)
+schwell-j-MTPC-v0.obj : error LNK2019: unresolved external symbol __imp__sem_post referenced in function "void * __cdecl readFrom(void *)" (?readFrom@@YAPAXPAX@Z)
+schwell-j-MTPC-v0.obj : error LNK2019: unresolved external symbol __imp__sem_getvalue referenced in function "void * __cdecl writeTo(void *)" (?writeTo@@YAPAXPAX@Z)
+C:\Temp\pthreads\pthreadVC2.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'X86'
+C:\Users\Jacob\Google Drive\Binghamton\Senior Fall\OS\Projects\schwell-j-MTPC-v0\Debug\schwell-j-MTPC.exe : fatal error LNK1120: 6 unresolved externals
