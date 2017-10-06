@@ -17,11 +17,12 @@
 #include <semaphore.h>
 
 // Get the file paths according to the OS
-#ifdef WIN32
+#ifdef WIN_32
 #define FILE_IN "C:\\temp\\coursein\\p2-in.txt"
 #define FILE_OUT "C:\\temp\\courseout\\p2-out.txt"
 #else
-#define FILE_IN "/home/student/temp/coursein/p2-in.txt"
+#define HOME getenv("HOME");
+#define FILE_IN HOME ## "/temp/coursein/p2-in.txt"
 #define FILE_OUT "/fileio/p2-out.txt"
 #endif
 
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
 	pthread_t producerThread;
 	pthread_t consumerThread;
 	doneReadingFile = false;	
-
+    printf("Reading from %s \nand writing to %s\n", FILE_IN, FILE_OUT);
     // open the files 
 	fileFrom = fopen(FILE_IN, "r");
     fileTo = fopen(FILE_OUT, "w");
