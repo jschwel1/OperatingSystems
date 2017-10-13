@@ -21,7 +21,7 @@
 #define FILE_IN "C:\\temp\\coursein\\p2-in.txt"
 #define FILE_OUT "C:\\temp\\courseout\\p2-out.txt"
 #else
-#define FILE_IN "/home/student/temp/coursein/p2-in.txt"
+#define FILE_IN "/temp/coursein/p2-in.txt"
 #define FILE_OUT "/fileio/p2-out.txt"
 #endif
 
@@ -49,14 +49,22 @@ int main(int argc, char **argv)
 	pthread_t consumerThread;
 	doneReadingFile = false;	
 
-    // open the files 
-	fileFrom = fopen(FILE_IN, "r");
+    // open the files
+	char fileIn[100]; 
+	#ifdef WIN32
+	strncpy(fileIn, FILE_IN, 100);
+	#else
+	strncpy(fileIn, getenv("HOME"), 100);
+	strncat(fileIn, FILE_IN, 100);
+	#endif
+	fileFrom = fopen(fileIn, "r");
     fileTo = fopen(FILE_OUT, "w");
 	
+	printf("Copying from %s to %s\n", fileIn, FILE_OUT);
     // Ensure both files opened correctly
 	if (fileFrom == NULL)
 	{
-		printf("Could not open %s\n", FILE_IN);
+		printf("Could not open %s\n", fileIn);
 		return 1;
 	}	
 	if (fileTo == NULL)
