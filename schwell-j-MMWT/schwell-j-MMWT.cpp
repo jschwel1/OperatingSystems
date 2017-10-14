@@ -2,7 +2,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#ifdef WIN32
+#include <time_functions.h>
+#else
 #include "time_functions.h"
+#endif
+
 #include <pthread.h>
 #include <semaphore.h>
 
@@ -36,8 +41,8 @@ int main(int argc, char** argv){
 	char fileInPath[256];
 	char fileOutPath[256];
 	#ifdef WIN32
-	strncpy(fileInpath, FILE_IN, 256);
-	strncpy(fileOutpath, FILE_OUT, 256);
+	strncpy(fileInPath, FILE_IN, 256);
+	strncpy(fileOutPath, FILE_OUT, 256);
 	#else
 	strncpy(fileInPath, getenv("HOME"), 256);
 	strncpy(fileOutPath, getenv("HOME"), 256);
@@ -108,8 +113,8 @@ void freeMatrix(int** mat, int rows){
 }
 
 int** readMatrixFromFile(FILE* file, int* rows, int* cols){
-    char buffer[1024];
-    int tempMatrix[1024][1024]; // Matrix cannot be more than 1024x1024
+    char buffer[256];
+    int tempMatrix[128][128]; // Matrix cannot be more than 128x128 elements
     int row = 0;
     int col = 0;
 	int** mat;
@@ -121,7 +126,7 @@ int** readMatrixFromFile(FILE* file, int* rows, int* cols){
         col = 0;
         size_t idx = 0;
         for (idx = 0; idx < strlen(buffer); idx++){
-            if (isdigit(buffer[idx])){
+            if (buffer[idx] >= '0' && buffer[idx] <= '9'){
                 tempMatrix[row][col++]=atoi((const char*)&buffer[idx]);
             }
         }
