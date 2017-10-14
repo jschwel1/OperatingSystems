@@ -6,7 +6,13 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#define FILE_PATH "matrix.txt"
+#ifdef WIN32
+#define FILE_IN "C:\\temp\\coursein\\matrixin.txt"
+#define FILE_OUT "C:\\temp\\courseout\\matrixout.txt"
+#else
+#define FILE_IN "/temp/coursein/matrixin.txt"
+#define FILE_OUT "/temp/courseout/matrixout.txt"
+#endif
 
 typedef struct {
 	int a;
@@ -19,37 +25,37 @@ void freeMatrix(int** mat, int rows);
 void* multiply(void* args);
 
 int main(int argc, char** argv){
-    FILE* dataFile;
+    FILE* fileIn;
+    FILE* fileOut;
     int** matrix1 = NULL;
     int** matrix2 = NULL;
-	int** matrixResult = NULL;
 	int m1Rows, m1Cols, m2Rows, m2Cols;
-    
+    int i, j, k;
+
     // open file
-    if ((dataFile=fopen(FILE_PATH, "r")) == NULL){
-        printf("ERROR: Could not open file %s\n", FILE_PATH);
+	char fileInPath[256];
+	char fileOutPath[256];
+	#ifdef WIN32
+	strncpy(fileInpath, FILE_IN, 256);
+	strncpy(fileOutpath, FILE_OUT, 256);
+	#else
+	strncpy(fileInPath, getenv("HOME"), 256);
+	strncpy(fileOutPath, getenv("HOME"), 256);
+	strncat(fileInPath, FILE_IN, 256);
+	strncat(fileOutPath, FILE_OUT, 256);
+	#endif
+    if ((fileIn=fopen(fileInPath, "r")) == NULL){
+        printf("ERROR: Could not open file %s\n", fileInPath);
         return 1;
     }
-    matrix1 = readMatrixFromFile(dataFile, &m1Rows, &m1Cols);
-    matrix2 = readMatrixFromFile(dataFile, &m2Rows, &m2Cols);
-	fclose(dataFile);
-    int i, j, k;
-    for (i = 0; i < m1Rows; i++){
-		printf("| ");
-        for (j = 0; j < m1Cols; j++){
-            printf("%d ", matrix1[i][j]);
-        }
-		printf("|\n");
-    }
-	printf("X\n");
-    for (i = 0; i < m2Rows; i++){
-		printf("| ");
-        for (j = 0; j < m2Cols; j++){
-            printf("%d ", matrix2[i][j]);
-        }
-		printf("|\n");
+	if ((fileOut=fopen(fileOutPath, "w")) == NULL){
+        printf("ERROR: Could not open file %s\n", fileOutPath);
+        return 1;
     }
 
+    matrix1 = readMatrixFromFile(fileIn, &m1Rows, &m1Cols);
+    matrix2 = readMatrixFromFile(fileIn, &m2Rows, &m2Cols);
+	fclose(fileIn);
 	if (m1Cols != m2Rows){
 		printf("Invalid dimensions!\n");
 		return 1;
@@ -72,26 +78,22 @@ int main(int argc, char** argv){
 	}
 
 	// build and print result matrix
-	matrixResult = (int**)malloc(sizeof(int*)*m1Rows);
-	printf("=\n");
+	char output[128];
 	for (i = 0; i < m1Rows; i++){
-		matrixResult[i] = (int*)malloc(sizeof(int)*m2Cols);
-		printf("|");
 		for (j = 0; j < m2Cols; j++){
 			int sum = 0;
 			for (k = 0; k < m1Cols; k++){
 				int idx = i*m1Cols*m2Cols+m1Cols*j+k;
 				sum+= args[idx].result;		
 			}
-			matrixResult[i][j] = sum;
-			printf("%4d ", sum);
+			snprintf(output, 128, "%4d ", sum);
+			fputs(output, fileOut);
 		}
-		printf("|\n");
+		fputc('\n', fileOut);
 	}
-
+	fclose(fileOut);
 	free(args);
 	free(pthreads);
-	freeMatrix(matrixResult, m1Rows);
 	freeMatrix(matrix1, m1Rows);
 	freeMatrix(matrix2, m2Rows);
 	return 0;
