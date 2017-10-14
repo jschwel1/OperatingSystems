@@ -40,78 +40,78 @@ char doneReadingFile;
 
 int main(int argc, char **argv)
 {
-	FILE* fileFrom;
-	FILE* fileTo;
-	sem_init(&inUseSem, 0, 1);
-	sem_init(&emptySem, 0, NUM_BUFFERS);
-	sem_init(&fullSem, 0, 0);
-	pthread_t producerThread;
-	pthread_t consumerThread;
-	doneReadingFile = false;	
+    FILE* fileFrom;
+    FILE* fileTo;
+    sem_init(&inUseSem, 0, 1);
+    sem_init(&emptySem, 0, NUM_BUFFERS);
+    sem_init(&fullSem, 0, 0);
+    pthread_t producerThread;
+    pthread_t consumerThread;
+    doneReadingFile = false;    
 
     // open the files
-	char fileIn[100]; 
-	#ifdef WIN32
-	strncpy(fileIn, FILE_IN, 100);
-	#else
-	strncpy(fileIn, getenv("HOME"), 100);
-	strncat(fileIn, FILE_IN, 100);
-	#endif
-	fileFrom = fopen(fileIn, "r");
+    char fileIn[100]; 
+    #ifdef WIN32
+    strncpy(fileIn, FILE_IN, 100);
+    #else
+    strncpy(fileIn, getenv("HOME"), 100);
+    strncat(fileIn, FILE_IN, 100);
+    #endif
+    fileFrom = fopen(fileIn, "r");
     fileTo = fopen(FILE_OUT, "w");
-	
-	printf("Copying from %s to %s\n", fileIn, FILE_OUT);
+    
+    printf("Copying from %s to %s\n", fileIn, FILE_OUT);
     // Ensure both files opened correctly
-	if (fileFrom == NULL)
-	{
-		printf("Could not open %s\n", fileIn);
-		return 1;
-	}	
-	if (fileTo == NULL)
-	{
-		printf("Could not open %s\n", FILE_OUT);
-		return 1;
-	}
-	
-	start_timing();
+    if (fileFrom == NULL)
+    {
+        printf("Could not open %s\n", fileIn);
+        return 1;
+    }    
+    if (fileTo == NULL)
+    {
+        printf("Could not open %s\n", FILE_OUT);
+        return 1;
+    }
+    
+    start_timing();
     // start threads
     if (pthread_create(&producerThread, NULL, readFrom, (void*)fileFrom))
-	{
+    {
         // If thread was not created, exit program
-		printf("Error creating producer thread.\n");
-		return 1;
-	}
-	if (pthread_create(&consumerThread, NULL, writeTo, (void*)fileTo))
-	{
+        printf("Error creating producer thread.\n");
+        return 1;
+    }
+    if (pthread_create(&consumerThread, NULL, writeTo, (void*)fileTo))
+    {
         // If consumer thread could not be created, wait for producer thread to complete, then exit program
-		printf("Error creating consumer thread.\n");
-		printf("Waiting for producer thread to join.\n");
-		if (pthread_join(producerThread, NULL))
-		{
-			printf("Error joining producer.\n");
-		}
-		return 1;
-	}
+        printf("Error creating consumer thread.\n");
+        printf("Waiting for producer thread to join.\n");
+        if (pthread_join(producerThread, NULL))
+        {
+            printf("Error joining producer.\n");
+        }
+        return 1;
+    }
 
     // When the producer thread completes, it should join here
-	if (pthread_join(producerThread, NULL))
-	{
-		printf("Error joining producer.\n");
-		return 1;
-	}
+    if (pthread_join(producerThread, NULL))
+    {
+        printf("Error joining producer.\n");
+        return 1;
+    }
     // When the consumer thread complete, it should join here
-	if (pthread_join(consumerThread, NULL))
-	{
-		printf("Error joining consumer.\n");
-		return 1;
-	}
+    if (pthread_join(consumerThread, NULL))
+    {
+        printf("Error joining consumer.\n");
+        return 1;
+    }
     // Stop the timer, close the files and print the results
-	stop_timing();
-	fclose(fileFrom);
-	fclose(fileTo);
-	printf("Wall time: %fs\n", get_wall_clock_diff());
-	printf("CPU time:  %fs\n", get_CPU_time_diff());
-	return 0;
+    stop_timing();
+    fclose(fileFrom);
+    fclose(fileTo);
+    printf("Wall time: %fs\n", get_wall_clock_diff());
+    printf("CPU time:  %fs\n", get_CPU_time_diff());
+    return 0;
 }
 
 /**
@@ -121,32 +121,32 @@ int main(int argc, char **argv)
 */
 void* readFrom(void* fromFile) 
 {
-	FILE* file = (FILE*)fromFile;
-	int idx = 0;
+    FILE* file = (FILE*)fromFile;
+    int idx = 0;
     // Loop as long as there are lines to be read
-	while (!doneReadingFile)
-	{
+    while (!doneReadingFile)
+    {
         // Make sure that there is at least 1 empty buffer slot to put another line into
         // and make sure the consumer thread is not in it's critical area
-		sem_wait(&emptySem);
-		sem_wait(&inUseSem);
-		// Read one line (up to \n, EOF, or BUFFER_SIZE) into the current slot in the buffer.
+        sem_wait(&emptySem);
+        sem_wait(&inUseSem);
+        // Read one line (up to \n, EOF, or BUFFER_SIZE) into the current slot in the buffer.
         // If the function returns NULL, nothing was read into the buffer, so the file is done being read.
-		if ((fgets(buffer[idx], BUFFER_SIZE, file)) == NULL)
-		{
+        if ((fgets(buffer[idx], BUFFER_SIZE, file)) == NULL)
+        {
             // If the file is done, set doneReadingFile and undo the semaphores
-			doneReadingFile = true;
-			sem_post(&inUseSem);
-			sem_post(&emptySem);
-			return NULL;
-		}
+            doneReadingFile = true;
+            sem_post(&inUseSem);
+            sem_post(&emptySem);
+            return NULL;
+        }
         // Exit the critical section and update the # full slots semaphore
-		sem_post(&inUseSem);
-		sem_post(&fullSem);
+        sem_post(&inUseSem);
+        sem_post(&fullSem);
         // Increment the buffer index mod NUM_BUFFERS (# buffer slots)
-		idx = (idx+1)%NUM_BUFFERS;
-	}
-	return NULL;
+        idx = (idx+1)%NUM_BUFFERS;
+    }
+    return NULL;
 }
 
 /**
@@ -156,29 +156,29 @@ void* readFrom(void* fromFile)
 */
 void* writeTo(void* toFile)
 {
-	FILE* file = (FILE*)toFile;
-	int idx = 0;
-	int fullSemVal;
+    FILE* file = (FILE*)toFile;
+    int idx = 0;
+    int fullSemVal;
     // Try writing lines from the buffer as long as the producer is still reading
     // the file and there are lines to be written.
-	while((!doneReadingFile) || (fullSemVal > 0)) 
-	{
-		// Wait until there is at least one buffer slot to write,
+    while((!doneReadingFile) || (fullSemVal > 0)) 
+    {
+        // Wait until there is at least one buffer slot to write,
         // then make sure the other thread is not in the critical section
         sem_wait(&fullSem);
-		sem_wait(&inUseSem);
+        sem_wait(&inUseSem);
         // Write the current buffer slot (line) to the file.
-		fputs(buffer[idx], file);
-		// Exit the critical section and update the # empty buffer slots
+        fputs(buffer[idx], file);
+        // Exit the critical section and update the # empty buffer slots
         sem_post(&inUseSem);
-		sem_post(&emptySem);
-		// Get the current number of full buffer slots and store it in fullSemVal
+        sem_post(&emptySem);
+        // Get the current number of full buffer slots and store it in fullSemVal
         // so the while loop can check that there are still items to be read after
         // the producer completed.
         sem_getvalue(&fullSem, &fullSemVal);
         // Increment the counter mod NUM_BUFFERS
-		idx = (idx+1)%NUM_BUFFERS;
-	}
-	return NULL;
+        idx = (idx+1)%NUM_BUFFERS;
+    }
+    return NULL;
 }
 
