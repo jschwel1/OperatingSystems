@@ -4,7 +4,7 @@ build: schwell-j-MMWT.cpp
 	g++ -g -Wall -o MMWT schwell-j-MMWT.cpp -lpthread
 
 run: build
-	./MMWT
+	-./MMWT
 edit:
 	vim schwell-j-MMWT.cpp
 clean: build

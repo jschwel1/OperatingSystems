@@ -2,21 +2,21 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+
 #ifdef WIN32
 #include <time_functions.h>
 #else
 #include "time_functions.h"
 #endif
-
 #include <pthread.h>
 #include <semaphore.h>
 
 #ifdef WIN32
-#define FILE_IN "C:\\temp\\coursein\\matrixin.txt"
-#define FILE_OUT "C:\\temp\\courseout\\matrixout.txt"
+#define FILE_IN "C:\\temp\\coursein\\p3in.txt"
+#define FILE_OUT "C:\\temp\\courseout\\p3out.txt"
 #else
-#define FILE_IN "/temp/coursein/matrixin.txt"
-#define FILE_OUT "/temp/courseout/matrixout.txt"
+#define FILE_IN "/temp/coursein/p3in.txt"
+#define FILE_OUT "/temp/courseout/p3out.txt"
 #endif
 
 typedef struct {
@@ -37,7 +37,7 @@ int main(int argc, char** argv){
 	int m1Rows, m1Cols, m2Rows, m2Cols;
     int i, j, k;
 
-    // open file
+    // open the input/output files
 	char fileInPath[256];
 	char fileOutPath[256];
 	#ifdef WIN32
@@ -54,15 +54,18 @@ int main(int argc, char** argv){
         return 1;
     }
 	if ((fileOut=fopen(fileOutPath, "w")) == NULL){
+		fclose(fileIn);
         printf("ERROR: Could not open file %s\n", fileOutPath);
         return 1;
     }
 
+	// Read the matrices from the file and check they have appropriate dimensions
     matrix1 = readMatrixFromFile(fileIn, &m1Rows, &m1Cols);
     matrix2 = readMatrixFromFile(fileIn, &m2Rows, &m2Cols);
 	fclose(fileIn);
 	if (m1Cols != m2Rows){
-		printf("Invalid dimensions!\n");
+		printf("Invalid dimensions!\nPress <Enter> to continue.");
+		getc(stdin);
 		return 1;
 	}
 	
@@ -70,6 +73,7 @@ int main(int argc, char** argv){
 	int numMultiplies = m1Cols*m1Rows*m2Cols; 
 	pthreadArgs* args = (pthreadArgs*)malloc(sizeof(pthreadArgs)*numMultiplies);
 	pthread_t* pthreads = (pthread_t*)malloc(sizeof(pthread_t)*numMultiplies);
+	// Add inputs to argument struct for multplier threads and start each one
 	for (i = 0; i < m1Rows; i++){
 		for (j = 0; j < m2Cols; j++){
 			for (k = 0; k < m1Cols; k++){
@@ -77,12 +81,15 @@ int main(int argc, char** argv){
 				args[idx].a = matrix1[i][k];
 				args[idx].b = matrix2[k][j];
 				pthread_create(&pthreads[idx], NULL, multiply, (void*)&args[idx]);
-				pthread_join(pthreads[idx], NULL);
 			}
 		}
 	}
+	// Join all the threads.
+	for (i = 0; i < numMultiplies; i++){
+		pthread_join(pthreads[i], NULL);
+	}
 
-	// build and print result matrix
+	// Sum up the products corresponding to each matrix cell and output it to the file. 
 	char output[128];
 	for (i = 0; i < m1Rows; i++){
 		for (j = 0; j < m2Cols; j++){
@@ -96,11 +103,14 @@ int main(int argc, char** argv){
 		}
 		fputc('\n', fileOut);
 	}
+	
+	// Close all files and free all memory malloc-ed to prevent memory leaks
 	fclose(fileOut);
 	free(args);
 	free(pthreads);
 	freeMatrix(matrix1, m1Rows);
 	freeMatrix(matrix2, m2Rows);
+
 	return 0;
 }
 
