@@ -89,7 +89,7 @@ int main(int argc, char** argv){
 		pthread_join(pthreads[i], NULL);
 	}
 
-	// Sum up the products corresponding to each matrix cell and output it to the file. 
+	// Sum up the products corresponding to each matrix cell and output it to the file and console
 	char output[128];
 	for (i = 0; i < m1Rows; i++){
 		for (j = 0; j < m2Cols; j++){
@@ -98,10 +98,12 @@ int main(int argc, char** argv){
 				int idx = i*m1Cols*m2Cols+m1Cols*j+k;
 				sum+= args[idx].result;		
 			}
+			printf("%4d ", sum);
 			snprintf(output, 128, "%4d ", sum);
 			fputs(output, fileOut);
 		}
 		fputc('\n', fileOut);
+		printf("\n");
 	}
 	
 	// Close all files and free all memory malloc-ed to prevent memory leaks
