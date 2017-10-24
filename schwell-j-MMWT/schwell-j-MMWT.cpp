@@ -107,6 +107,8 @@ int main(int argc, char** argv){
         fputc('\n', fileOut);
         printf("\n");
     }
+    printf("\nPress <Enter> to continue.\n");
+    getc(stdin);
     
     // Close all files and free all memory malloc-ed to prevent memory leaks
     fclose(fileOut);
