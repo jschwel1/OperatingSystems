@@ -12,11 +12,11 @@
 #include <semaphore.h>
 
 #ifdef WIN32
-#define FILE_IN "C:\\temp\\coursein\\p3in.txt"
-#define FILE_OUT "C:\\temp\\courseout\\p3out.txt"
+#define FILE_IN "C:\\temp\\coursein\\p3-in.txt"
+#define FILE_OUT "C:\\temp\\courseout\\p3-out.txt"
 #else
-#define FILE_IN "/temp/coursein/p3in.txt"
-#define FILE_OUT "/temp/courseout/p3out.txt"
+#define FILE_IN "/temp/coursein/p3-in.txt"
+#define FILE_OUT "/temp/courseout/p3-out.txt"
 #endif
 
 typedef struct {
