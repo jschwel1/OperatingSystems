@@ -37,7 +37,7 @@ int main(int argc, char** argv){
 	int m1Rows, m1Cols, m2Rows, m2Cols;
     int i, j, k;
 
-    // open the input/output files
+    // open the input/output files and check that they actually opened
 	char fileInPath[256];
 	char fileOutPath[256];
 	#ifdef WIN32
@@ -51,11 +51,13 @@ int main(int argc, char** argv){
 	#endif
     if ((fileIn=fopen(fileInPath, "r")) == NULL){
         printf("ERROR: Could not open file %s\n", fileInPath);
+        getc(stdin);
         return 1;
     }
 	if ((fileOut=fopen(fileOutPath, "w")) == NULL){
 		fclose(fileIn);
         printf("ERROR: Could not open file %s\n", fileOutPath);
+        getc(stdin);
         return 1;
     }
 
@@ -130,7 +132,7 @@ int** readMatrixFromFile(FILE* file, int* rows, int* cols){
     int row = 0;
     int col = 0;
 	int** mat;
-
+    // The first matrix will break on *, the second one will break at EOF
     while(fgets(buffer, sizeof(buffer), file) != NULL){
         if (buffer[0] == '*'){
 			break;
@@ -144,9 +146,11 @@ int** readMatrixFromFile(FILE* file, int* rows, int* cols){
         }
         row++;
     }
+    // Allocate space for the rows
 	mat = (int**)malloc(sizeof(int*)*row);
 	int r;
 	for (r = 0; r < row; r++){
+        // Allocate space for each column in this row
 		mat[r] = (int*)malloc(sizeof(int)*col);
 		int c;
 		for (c = 0; c < col; c++){
