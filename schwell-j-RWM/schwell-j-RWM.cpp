@@ -19,7 +19,7 @@
 #define DEBUG(...)
 #endif
 
-#define ROUNDS 3
+#define ROUNDS 10 
 
 class Monitor{
 
@@ -32,11 +32,9 @@ private:
 	std::string data;
 
 	std::string timeToString(){
-		DEBUG(std::cout << "timeToString passed: " << get_CPU_time() << std::endl);
 		char outstr[128];
-		long ms = get_CPU_time();
-		int mm = ms%1000;
-		int ss = ms/1000;
+		int ss, mm;
+		get_wall_time_ints(&ss, &mm);
 		snprintf(outstr, 128, "%d:%3d", ss, mm);
 		return std::string(outstr);
 	}
@@ -65,7 +63,8 @@ public:
 		// If any writers are currently writing or waiting to write, do not enter
 		while ((numWriting > 0) || (numWaitingWs > 0)){
 			numWaitingRs++;
-			std::cout << "Num Waiting Ws: " << numWaitingWs << "\t Currently Writing: " << numWriting << std::endl;
+			//std::cout << "Num Waiting Ws: " << numWaitingWs << "\t Currently Writing: " << numWriting << std::endl;
+			std::cout << "(Rb) Writing: " << numWriting << "\tWs Waiting: " << numWaitingWs << "\tnumReading: " << numReading << "\t waiting Rs " << numWaitingRs << std::endl;
 			pthread_cond_wait(&canRead, &monitorMutex);
 			numWaitingRs--;
 		}
@@ -73,6 +72,7 @@ public:
 		// then release the lock.
 		numReading++;
 		std::cout << "-------------- reader " << i << " entered ------" << std::endl;
+		/******** OUTPUT TO FILE *********/
 		pthread_cond_signal(&canRead);
 		pthread_mutex_unlock(&monitorMutex);
 	}
@@ -84,6 +84,7 @@ public:
 		// so endRead only needs to signal writers (once all readers finish)
 		if (numReading == 0){
 			pthread_cond_signal(&canWrite);
+			std::cout << " --- signaled canWrite *" << numWaitingWs << " waitingWs, " << numWaitingRs << " waitingRs" << std::endl;
 		}
 		std::cout << "-------------- reader " << i << " done ------" << std::endl;
 		pthread_mutex_unlock(&monitorMutex);
@@ -94,7 +95,7 @@ public:
 		// If any writers are writing or any readers are reading
 		while ((numWriting > 0) || (numReading > 0)){
 			numWaitingWs++;
-			std::cout << "Writing: " << numWriting << "\tWs Waiting: " << numWaitingWs << "\tnumReading: " << numReading << "\t waiting Rs " << numWaitingRs << std::endl;
+			std::cout << "(Wb) Writing: " << numWriting << "\tWs Waiting: " << numWaitingWs << "\tnumReading: " << numReading << "\t waiting Rs " << numWaitingRs << std::endl;
 			pthread_cond_wait(&canWrite, &monitorMutex);
 			numWaitingWs--;
 		}
@@ -109,11 +110,11 @@ public:
 		std::cout << "-------------- writer " << i << " done ------";
 		if (numWaitingRs > 0){
 			pthread_cond_signal(&canRead);
-			std::cout << " --- signaled canRead " << std::endl;
+			std::cout << " --- signaled canRead *" << numWaitingWs << " waitingWs, " << numWaitingRs << " waitingRs" << std::endl;
 		}
 		else{
 			pthread_cond_signal(&canWrite);
-			std::cout << " --- signaled canWrite " << std::endl;
+			std::cout << " --- signaled canWrite *" << numWaitingWs << "waitingWs,  " << numWaitingRs << " waitingRs" << std::endl;
 		}
 		pthread_mutex_unlock(&monitorMutex);
 	}
