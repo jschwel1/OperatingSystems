@@ -159,7 +159,7 @@ int main(int argc, char** argv){
 	filePath+=FILE_PATH;
 	#endif
 	std::fstream fs;
-	fs.open(filePath.c_str(), std::fstream::in | std::fstream::out);
+	fs.open(filePath.c_str(), std::fstream::in | std::fstream::out | std::fstream::trunc);
 	if (!fs.is_open()){
 		std::cout << "ERROR: Could not open file " << FILE_PATH << std::endl;
         std::cout << "Hit <enter> to continue";
