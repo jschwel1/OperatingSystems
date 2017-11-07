@@ -7,7 +7,6 @@
 
 #ifdef WIN32
 #include <time_functions.h>
-#define HOME_DIR ""
 #define FILE_PATH "C:\\Windows\\temp\\courseout\\p4-out.txt"
 #else
 #include "time_functions.h"
@@ -39,7 +38,7 @@ private:
 		char outstr[128];
 		int ss, mm;
 		get_wall_time_ints(&ss, &mm);
-		snprintf(outstr, 128, "%d:%3d", ss, mm);
+		snprintf(outstr, 128, "%d:%03d", ss, mm);
 		return std::string(outstr);
 	}
 
@@ -160,9 +159,11 @@ int main(int argc, char** argv){
 	filePath+=FILE_PATH;
 	#endif
 	std::fstream fs;
-	fs.open(filePath.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
+	fs.open(filePath.c_str(), std::fstream::in | std::fstream::out);
 	if (!fs.is_open()){
 		std::cout << "ERROR: Could not open file " << FILE_PATH << std::endl;
+        std::cout << "Hit <enter> to continue";
+        fgetc(stdin);
 		return 1;
 	}
 	// Get the space for the threads and their arguments
